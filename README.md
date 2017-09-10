@@ -2,7 +2,7 @@
 
 **Ground station administrative tool stack**
 
-File **wifi.py**
+File [wifi.py](wifi.py)
 
 This file contains a set of functions for connecting wifi modules directly to the docker container of the drone. 
 
