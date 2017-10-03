@@ -28,3 +28,19 @@ We use this function
    for name, wlan, ssid, password in links:
         spawn(name, wlan, ssid, password)
 ```
+File [resources.py](resources.py)
+
+This file contains a set of functions for work with containers.
+
+For example:
+```Python
+def get(self):
+        names = map(lambda x: x.name, from_env().containers.list(all=True))
+        return {'containers': list(names)}
+```
+
+This function generates a list all containers.
+
+
+For more, take a look at the reference.
+[Docker SDK for Python ](https://docker-py.readthedocs.io/en/stable/index.html) and [Flask-RESTful](http://flask-restful.readthedocs.io/en/0.3.5/index.html)
