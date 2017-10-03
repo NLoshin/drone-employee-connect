@@ -8,16 +8,20 @@ import psutil, time, json, wifi
 
 API_PREFIX = '/api/v1'
 
+# Manage all containers
 class Containers(Resource):
+    #Flask-RESTful’s request parsing interface
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('image')
         self.parser.add_argument('params')
 
+    #Show all containers, include non-running ones
     def get(self):
         names = map(lambda x: x.name, from_env().containers.list(all=True))
         return {'containers': list(names)}
 
+    #Run a container and get its output
     def post(self):
         args = self.parser.parse_args()
         params = json.loads(args['params'])
@@ -47,11 +51,13 @@ class Containers(Resource):
                         'image': container.attrs['Config']['Image']
                     }}}
 
+# Manage running containers	
 class Container(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('cmd')
 
+	# Get status of the container by name
     def get(self, name):
         c = from_env().containers.get(name)
         return {'containers': {
@@ -60,6 +66,7 @@ class Container(Resource):
                         'image': c.attrs['Config']['Image']
                         }}}
 
+	# Remove container
     def delete(self, name):
         try:
             c = from_env().containers.get(name)
@@ -73,6 +80,7 @@ class Container(Resource):
 
         return {'success': True}
 
+	# Get logs from this container or restart it
     def post(self, name):
         args = self.parser.parse_args()
         c = from_env().containers.get(name)
@@ -83,6 +91,7 @@ class Container(Resource):
         else:
             return {'success': False}
 
+# Check hardware and get it status
 class Hardware(Resource):
     def get(self):
         ping_param = "-n 1" if system().lower()=="windows" else "-c 1"
@@ -99,6 +108,7 @@ class Hardware(Resource):
                         'mem': psutil.virtual_memory().percent
                     }}}
 
+#Use to specify alternate locations to pull the values from.
 api = Api(app)
 api.add_resource(Containers, API_PREFIX+'/containers')
 api.add_resource(Container,  API_PREFIX+'/containers/<name>')
